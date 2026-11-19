@@ -1,140 +1,161 @@
-// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
-// The story: five missions for Lena "Vex" Marlowe, a courier fresh off the ferry in
-// Solmar Bay who owes the wrong people money. Each mission has a target marker, an
-// objective line for the HUD, and a check that runs every frame.
-import { ROADS_X, ROADS_Y } from './config.js';
+// The story of Porto Verde: five jobs from Sofia Delgado, the fixer.
+// Each job pays; finish them all and Milo owns the city.
 
+import { MISSION_REWARDS } from './config.js';
+
+// A job: where to go, what to do, what it pays.
 export const MISSIONS = [
   {
-    id: 'meet-rico',
-    title: 'Mission 1 — New in Town',
-    briefing: 'Rico waits for you at Central Plaza. Walk or drive to the yellow marker and say hello.',
-    reward: 200,
-    // The plaza centre: the park has no buildings, so this is reachable on every seed.
-    // (The old target 1640,1100 sat inside a building block and was unreachable on some seeds.)
-    target: () => ({ x: 2040, y: 1100, label: 'Meet Rico at Central Plaza' }),
-    objective: () => 'Meet Rico at Central Plaza',
-    onStart(G) {
-      G.message = 'New mission: meet Rico at Central Plaza.';
-      G.messageTimer = 4;
-    },
-    check(G) {
-      const t = this.target();
-      const d = Math.hypot(G.player.x - t.x, G.player.y - t.y);
-      return d < 70 ? 'done' : 'active';
-    },
+    name: 'First Job',
+    giver: 'Sofia Delgado',
+    brief: 'Sofia needs a package picked up at the Marina. Drive or walk to the gold marker.',
+    kind: 'goto',
+    target: { x: 2260, y: 260 },
+    reward: MISSION_REWARDS[0],
   },
   {
-    id: 'borrowed-wheels',
-    title: 'Mission 2 — Borrowed Wheels',
-    briefing: 'Rico needs wheels. Take any parked car (press F beside one) and bring it to the garage on Marina Row.',
-    reward: 300,
-    target: () => ({ x: 2840, y: 560, label: 'Garage on Marina Row' }),
-    objective: (G) => (G.player.inCar ? 'Drive the car to the garage' : 'Steal a car — press F beside one'),
-    onStart(G) {
-      G.message = 'New mission: borrow a car, any car.';
-      G.messageTimer = 4;
-    },
-    check(G) {
-      if (!G.player.inCar) return 'active';
-      const t = this.target();
-      const d = Math.hypot(G.player.inCar.x - t.x, G.player.inCar.y - t.y);
-      return d < 90 ? 'done' : 'active';
-    },
+    name: 'Getaway Driver',
+    giver: 'Sofia Delgado',
+    brief: 'A car is waiting at the plaza. Steal it and reach the drop-off before the clock runs out — the cops are already looking.',
+    kind: 'steal-and-deliver',
+    target: { x: 260, y: 2260 },
+    carAt: { x: 1300, y: 1300 },
+    timeLimit: 75,
+    reward: MISSION_REWARDS[1],
   },
   {
-    id: 'sunset-courier',
-    title: 'Mission 3 — Sunset Courier',
-    briefing: 'A package, three drops, one sunset. Drive through every checkpoint before the timer runs out.',
-    reward: 500,
-    target: (G) => {
-      const points = [
-        { x: 640, y: 200, label: 'Drop 1 — Palm Heights' },
-        { x: 3040, y: 1280, label: 'Drop 2 — Marina District' },
-        { x: 1040, y: 2000, label: 'Drop 3 — Old Town docks' },
-      ];
-      return points[Math.min(G.missionState.stage, points.length - 1)];
-    },
-    objective: (G) => `Courier drop ${Math.min(G.missionState.stage + 1, 3)} of 3 — ${Math.ceil(G.missionState.timer)}s left`,
-    onStart(G) {
-      G.missionState = { stage: 0, timer: 150 };
-      G.message = 'Courier run! Three drops, 150 seconds.';
-      G.messageTimer = 4;
-    },
-    check(G) {
-      G.missionState.timer -= 1 / 60;
-      if (G.missionState.timer <= 0) return 'failed';
-      const t = this.target(G);
-      const px = G.player.inCar ? G.player.inCar.x : G.player.x;
-      const py = G.player.inCar ? G.player.inCar.y : G.player.y;
-      if (Math.hypot(px - t.x, py - t.y) < 90) {
-        G.missionState.stage += 1;
-        G.money += 100;
-        G.audio.cash();
-        G.message = `Drop ${G.missionState.stage} of 3 done — +$100`;
-        G.messageTimer = 2.5;
-        if (G.missionState.stage >= 3) return 'done';
-      }
-      return 'active';
-    },
+    name: 'The Delivery',
+    giver: 'Sofia Delgado',
+    brief: 'Three drops, one night. Hit every gold marker across the city.',
+    kind: 'multi-goto',
+    targets: [
+      { x: 660, y: 660 },
+      { x: 1860, y: 1060 },
+      { x: 1060, y: 1860 },
+    ],
+    reward: MISSION_REWARDS[2],
   },
   {
-    id: 'rival-trouble',
-    title: 'Mission 4 — Rival Trouble',
-    briefing: 'The Coral Vipers are shaking down Rico’s corner near the docks. Deal with all four of them.',
-    reward: 700,
-    target: () => ({ x: 3100, y: 1900, label: 'The Docks — Coral Vipers' }),
-    objective: (G) => `Deal with the Coral Vipers: ${4 - G.missionState.kills} left`,
-    onStart(G) {
-      G.missionState = { stage: 0, kills: 0 };
-      G.gang = [];
-      const spots = [
-        { x: 3060, y: 1860 },
-        { x: 3160, y: 1940 },
-        { x: 3000, y: 2000 },
-        { x: 3180, y: 1840 },
-      ];
-      for (const s of spots) {
-        G.gang.push({ x: s.x, y: s.y, kind: 'gang', name: 'Coral Viper', angle: 0, hp: 60, down: false, speed: 150, shootTimer: 2, bob: 0 });
-      }
-      G.message = 'Four Coral Vipers at the docks. Deal with them.';
-      G.messageTimer = 4;
-    },
-    check(G) {
-      if (G.missionState.kills >= 4) return 'done';
-      return 'active';
-    },
+    name: 'Hot Pursuit',
+    giver: 'Sofia Delgado',
+    brief: 'The heat is on — three stars. Lose the cops and stay free for 60 seconds.',
+    kind: 'evade',
+    evadeSeconds: 60,
+    reward: MISSION_REWARDS[3],
   },
   {
-    id: 'heat-wave',
-    title: 'Mission 5 — Heat Wave',
-    briefing: 'The whole city is looking for you. Three stars and counting — reach the safehouse in Old Town and lay low until the heat dies.',
-    reward: 1000,
-    target: () => ({ x: 640, y: 560, label: 'Safehouse — Old Town' }),
-    objective: (G) => (G.wanted > 0 ? 'Lose the heat at the safehouse!' : 'Heat is off — reach the safehouse'),
-    onStart(G) {
-      G.wanted = 3;
-      G.wantedTimer = 0;
-      G.message = 'HEAT WAVE — 3 stars! Reach the safehouse in Old Town.';
-      G.messageTimer = 5;
-    },
-    check(G) {
-      const t = this.target();
-      const d = Math.hypot(G.player.x - t.x, G.player.y - t.y);
-      if (d < 80 && G.wanted === 0) return 'done';
-      return 'active';
-    },
+    name: 'The Big Score',
+    giver: 'Sofia Delgado',
+    brief: 'The Banco Verde vault. Grab the cash at the bank, then escape to the safehouse at the north docks.',
+    kind: 'heist',
+    target: { x: 660, y: 260 },
+    escape: { x: 2260, y: 260 },
+    reward: MISSION_REWARDS[4],
   },
 ];
 
-export function missionObjective(G) {
-  const m = MISSIONS[G.missionIndex];
-  if (!m) return 'Story complete — Solmar Bay is yours. Free roam!';
-  return m.objective(G);
+export function createMissionState() {
+  return {
+    index: 0, // which mission is active (0..4); 5 means the story is done
+    stage: 0, // progress within a multi-stage mission
+    timer: 0, // counts down for timed missions, up for evade missions
+    done: false,
+  };
 }
 
-export function missionTarget(G) {
-  const m = MISSIONS[G.missionIndex];
+export function currentMission(state) {
+  if (state.index >= MISSIONS.length) return null;
+  return MISSIONS[state.index];
+}
+
+// The active target point for the HUD arrow and the minimap.
+export function missionTarget(state) {
+  const m = currentMission(state);
   if (!m) return null;
-  return m.target(G);
+  if (m.kind === 'multi-goto') return m.targets[Math.min(state.stage, m.targets.length - 1)];
+  if (m.kind === 'steal-and-deliver') return state.stage === 0 ? m.carAt : m.target;
+  if (m.kind === 'heist') return state.stage === 0 ? m.target : m.escape;
+  if (m.kind === 'goto') return m.target;
+  return null; // evade missions have no destination
+}
+
+// A short line for the HUD describing what to do right now.
+export function missionObjective(state) {
+  const m = currentMission(state);
+  if (!m) return 'Story complete — free roam. Enjoy Porto Verde!';
+  if (m.kind === 'goto') return 'Reach the gold marker at the Marina';
+  if (m.kind === 'steal-and-deliver' && state.stage === 0) return 'Steal the car at the plaza';
+  if (m.kind === 'heist' && state.stage === 0) return 'Reach the bank and grab the cash';
+  if (m.kind === 'heist' && state.stage === 1) return 'Escape to the safehouse at the north docks';
+  if (m.kind === 'evade') return `Lose the cops — stay free for ${Math.max(0, Math.ceil(m.evadeSeconds - state.timer))}s`;
+  if (m.kind === 'multi-goto') return `Drop ${state.stage + 1} of ${m.targets.length}`;
+  return m.brief;
+}
+
+// Start a mission: reset its timer and stage.
+export function startMission(state) {
+  const m = currentMission(state);
+  if (!m) return;
+  state.stage = 0;
+  state.timer = 0;
+  state.done = false;
+}
+
+// Distance from the player to the active target (Infinity when none).
+export function distanceToTarget(state, x, y) {
+  const t = missionTarget(state);
+  if (!t) return Infinity;
+  return Math.hypot(t.x - x, t.y - y);
+}
+
+// Advance the mission. Returns 'complete' when the mission is finished,
+// 'stage' when a stage advanced, or null when nothing happened.
+export function advanceMission(state, x, y, inCar, wanted, dt) {
+  const m = currentMission(state);
+  if (!m) return null;
+
+  if (m.kind === 'goto') {
+    if (Math.hypot(m.target.x - x, m.target.y - y) < 60) return 'complete';
+  } else if (m.kind === 'steal-and-deliver') {
+    if (state.stage === 0) {
+      if (inCar && Math.hypot(m.carAt.x - x, m.carAt.y - y) < 120) state.stage = 1;
+    } else if (Math.hypot(m.target.x - x, m.target.y - y) < 60) {
+      return 'complete';
+    }
+  } else if (m.kind === 'multi-goto') {
+    const t = m.targets[state.stage];
+    if (Math.hypot(t.x - x, t.y - y) < 60) {
+      state.stage += 1;
+      if (state.stage >= m.targets.length) return 'complete';
+      return 'stage';
+    }
+  } else if (m.kind === 'evade') {
+    if (wanted === 0) {
+      state.timer += dt;
+      if (state.timer >= m.evadeSeconds) return 'complete';
+    } else {
+      state.timer = Math.max(0, state.timer - dt * 0.5);
+    }
+  } else if (m.kind === 'heist') {
+    if (state.stage === 0) {
+      if (Math.hypot(m.target.x - x, m.target.y - y) < 60) state.stage = 1;
+    } else if (Math.hypot(m.escape.x - x, m.escape.y - y) < 60) {
+      return 'complete';
+    }
+  }
+  return null;
+}
+
+// Tick a timed mission's countdown. Returns true when time runs out.
+export function tickMissionTimer(state, dt) {
+  const m = currentMission(state);
+  if (!m || !m.timeLimit) return false;
+  state.timer += dt;
+  return state.timer >= m.timeLimit;
+}
+
+export function missionTimeLeft(state) {
+  const m = currentMission(state);
+  if (!m || !m.timeLimit) return null;
+  return Math.max(0, m.timeLimit - state.timer);
 }

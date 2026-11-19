@@ -1,40 +1,47 @@
-// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
-// Save / load through localStorage: money, health, story progress and position.
-// A corrupt or missing save is treated as "no save", never as an error.
-import { SAVE_KEY } from './config.js';
+// Save and load for Porto Verde — a single localStorage slot.
+// Stores money, mission progress, health, position and wanted level.
 
-export function loadSave() {
-  try {
-    const raw = window.localStorage.getItem(SAVE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw);
-    if (!data || typeof data !== 'object') return null;
-    return data;
-  } catch {
-    return null;
-  }
-}
+const SAVE_KEY = 'porto-verde-save-v1';
 
-export function writeSave(state) {
+export function saveGame(state) {
   try {
     const data = {
       money: state.money,
-      health: state.player.health,
       missionIndex: state.missionIndex,
+      missionsDone: state.missionsDone,
+      health: state.player.health,
       x: Math.round(state.player.x),
       y: Math.round(state.player.y),
-      time: state.clockMinutes, // the in-game clock, in minutes — applySave loads this into clockMinutes (was state.time, elapsed seconds, which reset the clock on load)
-      savedAt: Date.now(),
+      wanted: state.wanted,
+      totalEarned: state.totalEarned,
     };
-    window.localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
     return true;
-  } catch {
+  } catch (e) {
     return false;
   }
 }
 
+export function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (typeof data.money !== 'number' || typeof data.missionIndex !== 'number') return null;
+    return data;
+  } catch (e) {
+    return null;
+  }
+}
+
+export function hasSave() {
+  return loadGame() !== null;
+}
+
 export function clearSave() {
   try {
-    window.localStorage.removeItem(SAVE_KEY);
-  } catch { /* ignore */ }
+    localStorage.removeItem(SAVE_KEY);
+  } catch (e) {
+    // Storage may be unavailable; a missing save is not fatal.
+  }
 }
