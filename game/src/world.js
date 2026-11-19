@@ -161,9 +161,6 @@ export function createGame(rng, audio) {
     const p = G.player;
     const wasInCar = !!p.inCar; // entering a car this step must not trigger the exit below
     const events = stepPlayer(G, dt, axes, aim, shootHeld, actions);
-    if (events.stole) {
-      // Mission 2 notices the theft through the normal wanted flow.
-    }
     if (p.inCar) {
       // Driving: W/S throttle, A/D steer.
       const throttle = axes.y < 0 ? 1 : axes.y > 0 ? -1 : 0;
