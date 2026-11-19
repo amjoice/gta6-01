@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Sound, all synthesized with WebAudio — no audio files. Engine hum, two-tone siren,
 // gunshot noise, pickup chime, punch thud and a soft bass groove. Everything is guarded:
 // audio only starts after a user gesture, and a missing AudioContext never breaks the game.

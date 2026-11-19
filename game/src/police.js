@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // The wanted system: stars 0-5, police cars and foot officers who chase, ram and
 // arrest. Crimes raise stars; lying low lets them cool off. At high stars, more and
 // faster police arrive. Getting caught on foot means BUSTED.

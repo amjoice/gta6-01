@@ -1,7 +1,8 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // HUD and menus, drawn on the canvas: health bar, money, wanted stars, mission
 // objective, speed, district, minimap, messages, and the title / pause / busted /
 // story-complete panels. No DOM UI, so it all shows up in screenshots.
-import { VIEW_H, VIEW_W, WANTED_MAX, WORLD_H, WORLD_W } from './config.js';
+import { ROADS_X, ROADS_Y, VIEW_H, VIEW_W, WANTED_MAX, WORLD_H, WORLD_W } from './config.js';
 import { districtAt } from './city.js';
 import { MISSIONS } from './missions.js';
 
@@ -118,8 +119,8 @@ function drawMinimap(ctx, G) {
   ctx.fillStyle = '#7fae5a';
   ctx.fillRect(x0, y0, mw, mh * (2280 / WORLD_H));
   ctx.fillStyle = '#3a3f46';
-  for (const rx of [240, 640, 1040, 1440, 1840, 2240, 2640, 3040, 3360]) ctx.fillRect(x0 + rx * sx - 2, y0, 4, mh);
-  for (const ry of [200, 560, 920, 1280, 1640, 2000, 2280]) ctx.fillRect(x0, y0 + ry * sy - 2, mw, 4);
+  for (const rx of ROADS_X) ctx.fillRect(x0 + rx * sx - 2, y0, 4, mh);
+  for (const ry of ROADS_Y) ctx.fillRect(x0, y0 + ry * sy - 2, mw, 4);
   // Mission marker.
   const t = G.missionTargetPos;
   if (t) {

@@ -1,8 +1,9 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Drawing only: the city, the sea and beach, cars, people, bullets, particles and the
 // mission marker, seen through a camera that follows the player. Flat vector art, drawn
 // fresh every frame from the world state — no image assets at all.
 import { BEACH_TOP, COLORS, ROADS_X, ROADS_Y, ROAD_W, VIEW_H, VIEW_W, WORLD_H, WORLD_W } from './config.js';
-import { drawHud, drawScreenPanel, SCREEN_PLAY } from './hud.js';
+import { drawHud, drawScreenPanel, SCREEN_BUSTED, SCREEN_DONE, SCREEN_OVER, SCREEN_PAUSED, SCREEN_PLAY } from './hud.js';
 
 export function createRenderer(canvas) {
   const ctx = canvas.getContext('2d');
@@ -302,7 +303,7 @@ export function createRenderer(canvas) {
     ctx.translate(-G.camera.x, -G.camera.y);
     drawWorld(G);
     ctx.restore();
-    if (screen === SCREEN_PLAY || screen === 'paused' || screen === 'busted' || screen === 'over' || screen === 'done') {
+    if (screen === SCREEN_PLAY || screen === SCREEN_PAUSED || screen === SCREEN_BUSTED || screen === SCREEN_OVER || screen === SCREEN_DONE) {
       drawHud(ctx, G);
     }
     if (screen !== SCREEN_PLAY) drawScreenPanel(ctx, screen, G);

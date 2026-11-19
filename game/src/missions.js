@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // The story: five missions for Lena "Vex" Marlowe, a courier fresh off the ferry in
 // Solmar Bay who owes the wrong people money. Each mission has a target marker, an
 // objective line for the HUD, and a check that runs every frame.
@@ -9,7 +10,9 @@ export const MISSIONS = [
     title: 'Mission 1 — New in Town',
     briefing: 'Rico waits for you at Central Plaza. Walk or drive to the yellow marker and say hello.',
     reward: 200,
-    target: () => ({ x: 1640, y: 1100, label: 'Meet Rico at Central Plaza' }),
+    // The plaza centre: the park has no buildings, so this is reachable on every seed.
+    // (The old target 1640,1100 sat inside a building block and was unreachable on some seeds.)
+    target: () => ({ x: 2040, y: 1100, label: 'Meet Rico at Central Plaza' }),
     objective: () => 'Meet Rico at Central Plaza',
     onStart(G) {
       G.message = 'New mission: meet Rico at Central Plaza.';

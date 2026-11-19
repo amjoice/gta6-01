@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Traffic and pedestrians: the city feels alive. Traffic cars cruise the road grid in
 // their lanes and brake for the car ahead; pedestrians stroll the sidewalks and flee
 // when a gun goes off or a car comes at them.

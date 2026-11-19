@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Solmar Bay — shared constants. A sun-soaked coastal city, invented for this game.
 // Nothing here comes from any commercial game: all names, places and people are original.
 export const STEP = 1 / 60;

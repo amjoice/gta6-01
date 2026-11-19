@@ -1,3 +1,4 @@
+<!-- Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording). -->
 # gta6-01
 
 [![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)

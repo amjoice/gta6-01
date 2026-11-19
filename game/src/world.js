@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // The world: all state in one object, advanced one fixed step at a time. No drawing
 // and no DOM here except through the audio/save helpers the caller hands in.
 import { STEP, VIEW_H, VIEW_W, WORLD_H, WORLD_W } from './config.js';
@@ -158,6 +159,7 @@ export function createGame(rng, audio) {
 
     // Player: on foot, or driving.
     const p = G.player;
+    const wasInCar = !!p.inCar; // entering a car this step must not trigger the exit below
     const events = stepPlayer(G, dt, axes, aim, shootHeld, actions);
     if (events.stole) {
       // Mission 2 notices the theft through the normal wanted flow.
@@ -168,17 +170,19 @@ export function createGame(rng, audio) {
       const steer = axes.x;
       const hitWall = driveCar(G.city, p.inCar, throttle, steer, dt);
       if (hitWall && Math.abs(p.inCar.speed) > 200) G.audio.crash();
-      if (actions.enter) exitCar(G);
-      // Running over a pedestrian is a crime.
-      for (const ped of G.peds) {
-        if (ped.down) continue;
-        const d = Math.hypot(ped.x - p.inCar.x, ped.y - p.inCar.y);
-        if (d < 34 && Math.abs(p.inCar.speed) > 60) {
-          ped.down = true;
-          ped.hp = 0;
-          G.addWanted(1, 'hit a pedestrian');
-          G.spawnParticles(ped.x, ped.y, '#e5534b', 10);
-          scarePeds(G, ped.x, ped.y, 260);
+      if (wasInCar && actions.enter) exitCar(G);
+      // Running over a pedestrian is a crime (only while still driving — the car may have just been exited).
+      if (p.inCar) {
+        for (const ped of G.peds) {
+          if (ped.down) continue;
+          const d = Math.hypot(ped.x - p.inCar.x, ped.y - p.inCar.y);
+          if (d < 34 && Math.abs(p.inCar.speed) > 60) {
+            ped.down = true;
+            ped.hp = 0;
+            G.addWanted(1, 'hit a pedestrian');
+            G.spawnParticles(ped.x, ped.y, '#e5534b', 10);
+            scarePeds(G, ped.x, ped.y, 260);
+          }
         }
       }
     }

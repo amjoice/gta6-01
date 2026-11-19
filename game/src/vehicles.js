@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Cars: parked cars to steal, the player's car, and police cars. Driving is simple
 // arcade physics — accelerate, steer by speed, drag, and a push-out against buildings.
 import { CAR, ROADS_X, ROADS_Y, WORLD_H, WORLD_W } from './config.js';

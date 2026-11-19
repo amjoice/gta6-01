@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Boot and the one loop for SOLMAR BAY, an original open-world crime game: a coastal
 // city to explore on foot and by car, traffic and pedestrians, cars to steal, a wanted
 // level with police, five story missions, combat, a HUD with minimap, a start screen,

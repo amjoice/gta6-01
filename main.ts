@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // SOLMAR BAY — my gta6-01 entry (Node 22, standard library only): the game is this
 // directory's game/ folder, plain static files a desktop browser loads offline
 // (game/index.html and its ES modules, no library and no network request), and this

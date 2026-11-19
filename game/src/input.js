@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Keyboard + mouse input. Held keys steer; one-shot presses (confirm, pause, enter car,
 // punch, interact) are queued as bit flags and taken once by the loop. A scripted override
 // (used by the screenshot autopilot) can drive the same interface without a keyboard.

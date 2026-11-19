@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // The player on foot: WASD movement, running, punching, shooting at the mouse aim,
 // taking damage, and getting into / out of cars. Stealing a car is a crime — it raises
 // the wanted level, unless the car already belongs to the player.
@@ -63,7 +64,7 @@ export function stepPlayer(G, dt, axes, aim, shootHeld, actions) {
   const hit = collideBuildings(G.city, nx, ny, PLAYER.radius);
   const clamped = clampToWorld(hit.x, hit.y);
   p.x = clamped.x;
-  p.y = Math.min(clamped.y, WORLD_H - 60); // the deep sea is out of bounds on foot too
+  p.y = Math.min(clamped.y, WORLD_H - 140); // the sea starts at y=2460 (WORLD_H-140); on foot, the sand's edge is the limit
 
   // Punch: a short arc in front of the player.
   if (actions.punch && p.punchCooldown <= 0) {

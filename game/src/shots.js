@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Screenshot scenes behind ?shot=chase|city|mission|drive. Each one stages the real
 // game — real rules, real world — then steers it forward with a simple autopilot for a
 // few seconds, so the frame is what live play looks like and the same seed repeats it.

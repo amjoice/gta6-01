@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // Small seeded RNG (mulberry32) so a ?seed=N run is reproducible, plus helpers.
 export function createRandom(seed) {
   let state = (seed >>> 0) || 1;

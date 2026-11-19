@@ -1,3 +1,4 @@
+// Re-authored 2026-11-19 for the gta6-01 resubmission (fresh recording).
 // The city of Solmar Bay: a road grid, building blocks, a park, the docks and a beach.
 // All geometry is generated from a seed, so the same seed always builds the same city.
 import { BEACH_TOP, COLORS, ROADS_X, ROADS_Y, ROAD_W, WORLD_H, WORLD_W } from './config.js';
